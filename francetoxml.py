@@ -1,16 +1,16 @@
 # -*- coding: utf8 -*-
 import sys
 import os
-#from xml
+from xml import write_header
 
 def file_xml_format(wor,pos,lia,out_fn):
 
 
-	out = open(out_fn, mode='w', encoding='UTF-8')
+	#out = open(out_fn, mode='w', encoding='UTF-8')
 	#print gate_documentfeature
 	#print text
-	#print annotation_set
-	out.write("<?xml version='1.0' encoding='utf-8'?>")
+	#print annotation_set	
+	write_header(out_fn)
 	out.write("<GateDocument version=\"3\">")
 	out.write("<GateDocumentFeatures>")
 	out.write("<Feature>")
@@ -31,7 +31,7 @@ def file_xml_format(wor,pos,lia,out_fn):
 	out.write("</Feature>")
 	out.write("</GateDocumentFeatures>")
 
-	out.close()
+	#out.close()
 def read_fixed_format_txt(fn):
 
 	wor=[] #word
