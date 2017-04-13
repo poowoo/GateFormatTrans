@@ -1,1 +1,1 @@
-# ToGateFormat
+# GateFormat
