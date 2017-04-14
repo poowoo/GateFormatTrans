@@ -1,37 +1,26 @@
 # -*- coding: utf8 -*-
 import sys
 import os
-from xml import write_header
 
-def file_xml_format(wor,pos,lia,out_fn):
+from xml import xml_write_header
+from xml import xml_write_gatedocument_begin
+from xml import xml_write_gatedocument_end
+from xml import xml_write_gatedocument_feature
+from xml import xml_write_textwithnodes
+from xml import xml_write_annotation_set
 
+def file_xml_format(wor,pos,lia,out_fn):	
+	#print annotation_set
+	node_index_list = []
 
-	#out = open(out_fn, mode='w', encoding='UTF-8')
-	#print gate_documentfeature
-	#print text
-	#print annotation_set	
-	write_header(out_fn)
-	out.write("<GateDocument version=\"3\">")
-	out.write("<GateDocumentFeatures>")
-	out.write("<Feature>")
-  	out.write("  <Name className=\"java.lang.String\">gate.SourceURL</Name>")
-  	out.write("  <Value className=\"java.lang.String\">file:/C:/Users/david_hung/Desktop/en-corpus.txt</Value>")
-	out.write("</Feature>")
-	out.write("<Feature>")
-	out.write("  <Name className=\"java.lang.String\">MatchesAnnots</Name>")
-	out.write("  <Value className=\"gate.corpora.ObjectWrapper\"><![CDATA[<?xml version='1.1'?><gate.corpora.ObjectWrapper><value class=\"map\"><entry><null/><list><list><int>1657</int><int>1659</int><int>1663</int><int>1664</int></list></list></entry></value></gate.corpora.ObjectWrapper>]]></Value>")
-	out.write("</Feature>")
-	out.write("<Feature>")
-	out.write("  <Name className=\"java.lang.String\">MimeType</Name>")
-	out.write("  <Value className=\"java.lang.String\">text/plain</Value>")
-	out.write("</Feature>")
-	out.write("<Feature>")
-	out.write("  <Name className=\"java.lang.String\">docNewLineType</Name>")
-	out.write("  <Value className=\"java.lang.String\">CRLF</Value>")
-	out.write("</Feature>")
-	out.write("</GateDocumentFeatures>")
-
+	xml_write_header(out_fn)
+	xml_write_gatedocument_begin(out_fn)
+	xml_write_gatedocument_feature(out_fn,os.path.abspath(sys.argv[1]))
+	node_index_list = xml_write_textwithnodes(out_fn,wor)
+	xml_write_annotation_set(out_fn,wor,pos,lia,node_index_list)
+	xml_write_gatedocument_end(out_fn)
 	#out.close()
+
 def read_fixed_format_txt(fn):
 
 	wor=[] #word
@@ -55,7 +44,6 @@ def read_fixed_format_txt(fn):
 	return wor,pos,lia
 
 if __name__ == "__main__":
-	
-	
+
 	lang_word,lang_pos,lang_liasion = read_fixed_format_txt(sys.argv[1])
 	file_xml_format(lang_word,lang_pos,lang_liasion,sys.argv[2])
