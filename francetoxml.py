@@ -1,28 +1,17 @@
 # -*- coding: utf8 -*-
 import sys
 import os
+import xml
+import node_process
 
-from xml import xml_write_header
-from xml import xml_write_gatedocument_begin
-from xml import xml_write_gatedocument_end
-from xml import xml_write_gatedocument_feature
-from xml import xml_write_textwithnodes
-from xml import xml_write_annotation_set
-from xml import xml_set_nodes
-
-def file_xml_format(wor,pos,lia,out_fn):	
-	#print annotation_set
-	nodes_list = []
-
-	xml_write_header(out_fn)
-	xml_write_gatedocument_begin(out_fn)
-	xml_write_gatedocument_feature(out_fn,os.path.abspath(sys.argv[1]))
-	#nodes_list = xml_write_textwithnodes(out_fn,wor)
-	nodes_list = xml_set_nodes(wor,pos,lia)
-	xml_write_textwithnodes(out_fn,nodes_list)
-	xml_write_annotation_set(out_fn,nodes_list)
-	xml_write_gatedocument_end(out_fn)
-	#out.close()
+def file_xml_format(nodes_list,out_fn):	
+	
+	xml.write_header(out_fn)
+	xml.write_gatedocument_begin(out_fn)
+	xml.write_gatedocument_feature(out_fn,os.path.abspath(sys.argv[1]))		
+	xml.write_textwithnodes(out_fn,nodes_list)
+	xml.write_annotation_set(out_fn,nodes_list)
+	xml.write_gatedocument_end(out_fn)	
 
 def read_fixed_format_txt(fn):
 
@@ -46,7 +35,34 @@ def read_fixed_format_txt(fn):
 
 	return wor,pos,lia
 
-if __name__ == "__main__":
+def read_french_dict(fn):
+	
+	french_dict = {}
+	syllables = 0
+	with open(fn, mode='r', encoding='UTF-8') as file:	
 
+		for line in file:
+			if line[0] is "#":continue		
+			line = line.strip()
+			line = line.split(",")
+			syllables = 0
+			for i in range(len(line[-1])):
+				if line[-1][i] is "0" :#or  line[-1][i] is "0"
+					syllables += 1
+			if not line[0] in french_dict:
+				french_dict[line[0]] = str(syllables)
+			elif french_dict[line[0]] != str(syllables):
+				french_dict[line[0]] += ","+ str(syllables)
+			
+
+	return french_dict
+if __name__ == "__main__":
+	
 	lang_word,lang_pos,lang_liaision = read_fixed_format_txt(sys.argv[1])
-	file_xml_format(lang_word,lang_pos,lang_liaision,sys.argv[2])
+	french_dict = read_french_dict(sys.argv[3])
+
+	nodes_list = node_process.set_nodes(lang_word,lang_pos,lang_liaision)
+	node_process.set_word_syllable(nodes_list,french_dict)
+	node_process.check_four_rule(nodes_list)
+
+	file_xml_format(nodes_list,sys.argv[2])
