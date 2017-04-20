@@ -45,6 +45,7 @@ def set_nodes(words,pos,liaison):
 def set_word_syllable(nodes_list,french_dict):
 
 	for node in nodes_list:
+		#print(node[node_info.word.value])
 		if node[node_info.word.value] is "\n":continue
 		if node[node_info.word.value][-1] is "." or node[node_info.word.value][-1] is ",":
 			word = node[node_info.word.value][0:-1].lower()

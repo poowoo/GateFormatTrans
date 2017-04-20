@@ -40,11 +40,13 @@ def write_gatedocument_feature(fn,abspath):
 	out.write("</GateDocumentFeatures>\n")
 	out.close()
 
-def write_textwithnodes(fn,nodes_list):
+def write_textwithnodes(fn,nodes_list,index,total_index):
 	
 	out = open(fn, mode='a', encoding='UTF-8')	
 	out.write("<TextWithNodes>")
-	for node in nodes_list:
+	for i in range(index,total_index):
+		if i == len(nodes_list):break
+		node = nodes_list[i]
 		if node[node_info.word.value] is "\n":
 			out.write("&#xd;\n")
 		else:			
@@ -52,14 +54,17 @@ def write_textwithnodes(fn,nodes_list):
 	out.write("</TextWithNodes>\n")
 	out.close()	
 
-def write_annotation_set(fn,nodes_list):
+def write_annotation_set(fn,nodes_list,index,total_index):
 		
 	anno_index = 0
 	liaison_type =""		
 	out = open(fn, mode='a', encoding='UTF-8')
 	out.write("<AnnotationSet>\n")
 	#xml word
-	for node in nodes_list:
+	#for node in nodes_list:
+	for i in range(index,total_index):
+		if i == len(nodes_list):break
+		node = nodes_list[i]
 		if node[node_info.word.value] is not "\n":		
 			out.write("<Annotation Id=\""+str(anno_index)+"\" Type=\"word\" StartNode=\""+str(node[node_info.start.value])+"\" EndNode=\""+str(node[node_info.end.value])+"\">\n")
 			out.write("<Feature>\n")
@@ -99,31 +104,31 @@ def write_annotation_set(fn,nodes_list):
 			out.write("</Annotation>\n")			
 			anno_index += 1			
 									
-	#xml pos
-	for node in nodes_list:
-		if node[node_info.word.value] is not "\n":		
-			out.write("<Annotation Id=\""+str(anno_index)+"\" Type=\""+node[node_info.pos.value]+"\" StartNode=\""+str(node[node_info.start.value])+"\" EndNode=\""+str(node[node_info.end.value])+"\">\n")
-			out.write("<Feature>\n")
-			out.write("  <Name className=\"java.lang.String\">part_of_speech</Name>\n")
-			out.write("  <Value className=\"java.lang.String\">"+node[node_info.pos.value]+"</Value>\n")
-			out.write("</Feature>\n")
-			out.write("</Annotation>\n")			
-			anno_index += 1
-	
-	#xml liaison
-	for node in nodes_list:
-		if node[node_info.word.value] is not "\n":
-			if node[node_info.liaison.value] is "True":
-				liaison_type = "liaison_True"				
-			else:
-				liaison_type = "liaison_False"				
-			out.write("<Annotation Id=\""+str(anno_index)+"\" Type=\""+liaison_type+"\" StartNode=\""+str(node[node_info.start.value])+"\" EndNode=\""+str(node[node_info.end.value])+"\">\n")
-			out.write("<Feature>\n")
-			out.write("  <Name className=\"java.lang.String\">liaison</Name>\n")
-			out.write("  <Value className=\"java.lang.Boolean\">"+node[node_info.liaison.value]+"</Value>\n")
-			out.write("</Feature>\n")
-			out.write("</Annotation>\n")			
-			anno_index += 1
+	##xml pos
+	#for node in nodes_list:
+	#	if node[node_info.word.value] is not "\n":		
+	#		out.write("<Annotation Id=\""+str(anno_index)+"\" Type=\""+node[node_info.pos.value]+"\" StartNode=\""+str(node[node_info.start.value])+"\" EndNode=\""+str(node[node_info.end.value])+"\">\n")
+	#		out.write("<Feature>\n")
+	#		out.write("  <Name className=\"java.lang.String\">part_of_speech</Name>\n")
+	#		out.write("  <Value className=\"java.lang.String\">"+node[node_info.pos.value]+"</Value>\n")
+	#		out.write("</Feature>\n")
+	#		out.write("</Annotation>\n")			
+	#		anno_index += 1
+	#
+	##xml liaison
+	#for node in nodes_list:
+	#	if node[node_info.word.value] is not "\n":
+	#		if node[node_info.liaison.value] is "True":
+	#			liaison_type = "liaison_True"				
+	#		else:
+	#			liaison_type = "liaison_False"				
+	#		out.write("<Annotation Id=\""+str(anno_index)+"\" Type=\""+liaison_type+"\" StartNode=\""+str(node[node_info.start.value])+"\" EndNode=\""+str(node[node_info.end.value])+"\">\n")
+	#		out.write("<Feature>\n")
+	#		out.write("  <Name className=\"java.lang.String\">liaison</Name>\n")
+	#		out.write("  <Value className=\"java.lang.Boolean\">"+node[node_info.liaison.value]+"</Value>\n")
+	#		out.write("</Feature>\n")
+	#		out.write("</Annotation>\n")			
+	#		anno_index += 1
 	
 	out.write("</AnnotationSet>\n")
 	out.close()

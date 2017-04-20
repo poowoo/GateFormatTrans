@@ -4,14 +4,43 @@ import os
 import xml
 import node_process
 
+def find_line_node_index(begin,size,nodes_list):
+
+	end = 0
+	for i in range(begin,len(nodes_list)): #node index
+		node = nodes_list[i]
+		if size == 0:break
+		if node[node_process.node_info.word.value] is "\n":
+			end = i
+			size -= 1
+	return end
+
 def file_xml_format(nodes_list,out_fn):	
 	
-	xml.write_header(out_fn)
-	xml.write_gatedocument_begin(out_fn)
-	xml.write_gatedocument_feature(out_fn,os.path.abspath(sys.argv[1]))		
-	xml.write_textwithnodes(out_fn,nodes_list)
-	xml.write_annotation_set(out_fn,nodes_list)
-	xml.write_gatedocument_end(out_fn)	
+	
+	out_fn_len = out_fn.find(".")
+	last_index = 0
+	i = 0
+	while  i < len(nodes_list):
+
+		
+		new_out_fn = out_fn[0:out_fn_len] + "_" + str(i).zfill(2) + ".xml"
+		
+		print("make " + new_out_fn)
+		xml.write_header(new_out_fn)
+		xml.write_gatedocument_begin(new_out_fn)
+		xml.write_gatedocument_feature(new_out_fn,os.path.abspath(sys.argv[1]))		
+
+		file_line = find_line_node_index(last_index,10000,nodes_list)
+		xml.write_textwithnodes(new_out_fn,nodes_list,last_index,file_line)
+		xml.write_annotation_set(new_out_fn,nodes_list,last_index,file_line)
+
+		xml.write_gatedocument_end(new_out_fn)
+		last_index = file_line + 1
+		if file_line == len(nodes_list)-1:
+			break
+		i += 1
+	
 
 def read_fixed_format_txt(fn):
 
@@ -58,11 +87,15 @@ def read_french_dict(fn):
 	return french_dict
 if __name__ == "__main__":
 	
+	print("load txt")
 	lang_word,lang_pos,lang_liaision = read_fixed_format_txt(sys.argv[1])
+	print("load dictonary")
 	french_dict = read_french_dict(sys.argv[3])
-
+	print("set nodes")
 	nodes_list = node_process.set_nodes(lang_word,lang_pos,lang_liaision)
+	print("set syllables")
 	node_process.set_word_syllable(nodes_list,french_dict)
+	print("set four rule")
 	node_process.check_four_rule(nodes_list)
-
+	print("save to xml")
 	file_xml_format(nodes_list,sys.argv[2])
